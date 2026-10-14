@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İyi ki Doğdun! 🌸</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Marcellus&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cream: '#FAF6F0',
+                        roseDust: '#E8B4B8',
+                        softPink: '#F3D1D1',
+                        warmPeach: '#FFE5EC',
+                        deepRose: '#9E5A63',
+                        goldGlow: '#D4AF37'
+                    },
+                    fontFamily: {
+                        serif: ['Marcellus', 'serif'],
+                        cursive: ['Dancing Script', 'cursive'],
+                        sans: ['Plus Jakarta Sans', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Smooth Background Gradient Movement */
+        body {
+            background: linear-gradient(-45deg, #fce4ec, #f3e5f5, #fff0f5, #ffebee);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Glassmorphism Card Effect */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.72);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 20px 40px rgba(158, 90, 99, 0.08);
+        }
+
+        /* Canvas layered background */
+        #petalCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* Pulsing Glow Animation */
+        .pulse-glow {
+            box-shadow: 0 0 25px rgba(232, 180, 184, 0.6);
+            animation: pulseGlow 3s infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 15px rgba(232, 180, 184, 0.4); }
+            100% { box-shadow: 0 0 30px rgba(232, 180, 184, 0.8), 0 0 10px rgba(212, 175, 55, 0.4); }
+        }
+
+        /* Flower Bloom Keyframe SVG Effect */
+        .bloom-svg {
+            transform-origin: center;
+            animation: bloom 4s ease-in-out infinite alternate;
+        }
+
+        @keyframes bloom {
+            0% { transform: scale(0.95) rotate(-2deg); }
+            100% { transform: scale(1.05) rotate(2deg); }
+        }
+
+        /* Custom Scrollbar for Editable Textarea */
+        textarea::-webkit-scrollbar {
+            width: 6px;
+        }
+        textarea::-webkit-scrollbar-thumb {
+            background-color: rgba(232, 180, 184, 0.5);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-700 flex flex-col justify-between relative selection:bg-roseDust selection:text-white">
+
+    <!-- Canvas Background for Floating Petals -->
+    <canvas id="petalCanvas"></canvas>
+
+    <!-- Top Music & Control Bar -->
+    <header class="w-full p-4 md:p-6 flex justify-between items-center z-20 max-w-5xl mx-auto">
+        <div class="flex items-center space-x-2 bg-white/60 backdrop-blur-md px-4 py-2 rounded-full border border-white/80 shadow-sm">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+            <span class="text-xs md:text-sm font-medium text-deepRose tracking-wide">Özel Doğum Günü Sayfası</span>
+        </div>
+
+        <button id="musicToggle" class="flex items-center space-x-2 bg-white/70 hover:bg-white text-deepRose px-4 py-2 rounded-full border border-roseDust/40 shadow-sm transition-all duration-300 hover:scale-105 active:scale-95 group">
+            <i id="musicIcon" class="fas fa-music text-roseDust group-hover:rotate-12 transition-transform"></i>
+            <span id="musicText" class="text-xs md:text-sm font-medium">Müziği Başlat</span>
+        </button>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="w-full max-w-3xl mx-auto px-4 py-6 z-20 flex-grow flex flex-col items-center justify-center">
+
+        <!-- Decorative Floral Header SVG -->
+        <div class="bloom-svg mb-2 text-roseDust opacity-80">
+            <svg width="80" height="40" viewBox="0 0 100 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M50 40C45 30 30 25 10 30C30 20 40 10 50 25C60 10 70 20 90 30C70 25 55 30 50 40Z" fill="currentColor"/>
+                <circle cx="50" cy="22" r="4" fill="#D4AF37"/>
+            </svg>
+        </div>
+
+        <!-- Animated Heading -->
+        <div class="text-center mb-6 space-y-2">
+            <h1 class="font-serif text-3xl sm:text-5xl md:text-6xl text-deepRose tracking-wide leading-tight">
+                İyi ki Doğdun! ✨
+            </h1>
+            <p class="font-sans text-sm md:text-base text-slate-500 font-light tracking-widest uppercase">
+                Yeni Yaşın Güzellikler Getirsin
+            </p>
+        </div>
+
+        <!-- Glassmorphism Card for Poem & Wish -->
+        <div class="glass-card w-full rounded-3xl p-6 md:p-10 relative pulse-glow border border-white/90">
+            
+            <!-- Corner Decorative Flowers -->
+            <div class="absolute -top-4 -left-4 text-3xl opacity-80 pointer-events-none select-none">🌸</div>
+            <div class="absolute -bottom-4 -right-4 text-3xl opacity-80 pointer-events-none select-none">🌸</div>
+
+            <!-- Poem Section Header -->
+            <div class="flex justify-between items-center mb-4 pb-3 border-b border-roseDust/20">
+                <span class="font-serif italic text-roseDust text-lg flex items-center gap-2">
+                    <i class="fas fa-feather-alt text-sm"></i> Senin İçin...
+                </span>
+                <button id="editBtn" class="text-xs font-medium text-slate-500 hover:text-deepRose bg-white/80 hover:bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm transition-all flex items-center gap-1.5">
+                    <i class="fas fa-pen text-[10px]"></i> <span id="editBtnText">Şiiri Düzenle</span>
+                </button>
+            </div>
+
+            <!-- Display Mode Poem -->
+            <div id="poemDisplay" class="font-cursive text-2xl md:text-3xl text-slate-700 leading-relaxed text-center py-4 min-h-[180px] flex items-center justify-center whitespace-pre-line">
+Canımın yoldaşı, gönlümün kadim yareni,
+Şu fani cihanda buldum senin gibi cevheri.
+Devran döndükçe artar muhabbetin kıymeti,
+Bugün ruz-i veladetindir, daim olsun saadeti.
+
+Bahar rüzgârı misali esip geldin ömrüme,
+Sırdaş oldun, hemhâl oldun şu naçar gönlüme.
+Hak teâlâ zerre keder değdirmesin yüzüne,
+Gül cemalin hiç solmasın, nur dolsun her gününe.
+
+Zaman dedikleri nehir akıp geçse de epeyce,
+Dostluğumuz baki kalır, asırlar devrilince.
+Cenab-ı Hak ömrüne sıhhat u afiyet eylesin,
+İyi ki varsın ey can dostum, bahtiyar ol ömrünce.
+
+Sana armağanım olsun bu naçizane kelam,
+Yüreğinden tebessüm eksik olmasın vesselam.
+            </div>
+
+            <!-- Edit Mode Textarea (Hidden by Default) -->
+            <div id="poemEditArea" class="hidden my-2">
+                <textarea id="poemInput" class="w-full h-44 p-4 rounded-xl border border-roseDust/40 focus:ring-2 focus:ring-roseDust focus:border-transparent outline-none bg-white/90 font-cursive text-xl md:text-2xl text-slate-700 text-center resize-none transition-all" placeholder="Kendi şiirinizi veya mesajınızı buraya yazın..."></textarea>
+                <div class="flex justify-end gap-2 mt-3">
+                    <button id="saveBtn" class="bg-deepRose text-white text-xs px-4 py-2 rounded-lg font-medium hover:bg-rose-800 transition shadow-sm">
+                        Kaydet
+                    </button>
+                </div>
+            </div>
+
+            <!-- Interactive Celebration Button inside Card -->
+            <div class="mt-8 pt-4 border-t border-roseDust/20 text-center">
+                <button id="celebrateBtn" class="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-roseDust via-deepRose to-roseDust text-white font-medium rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 flex items-center justify-center gap-3 mx-auto group">
+                    <i class="fas fa-gift text-lg group-hover:bounce"></i>
+                    <span>Doğum Günün Kutlu Olsun!</span>
+                    <i class="fas fa-sparkles text-goldGlow"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Interactive Wish Cards (Interactive Floating Elements) -->
+        <div class="grid grid-cols-3 gap-3 w-full mt-6">
+            <div class="glass-card p-3 rounded-2xl text-center hover:scale-105 transition duration-300 cursor-pointer group" onclick="triggerMiniConfetti()">
+                <span class="text-2xl block mb-1 group-hover:scale-110 transition">💖</span>
+                <span class="text-xs font-serif text-slate-600 font-medium">Sevgi Dolu</span>
+            </div>
+            <div class="glass-card p-3 rounded-2xl text-center hover:scale-105 transition duration-300 cursor-pointer group" onclick="triggerMiniConfetti()">
+                <span class="text-2xl block mb-1 group-hover:scale-110 transition">✨</span>
+                <span class="text-xs font-serif text-slate-600 font-medium">Huzur Yağmuru</span>
+            </div>
+            <div class="glass-card p-3 rounded-2xl text-center hover:scale-105 transition duration-300 cursor-pointer group" onclick="triggerMiniConfetti()">
+                <span class="text-2xl block mb-1 group-hover:scale-110 transition">🌺</span>
+                <span class="text-xs font-serif text-slate-600 font-medium">Neşeli Yıllar</span>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full py-4 text-center text-xs text-slate-400 font-light z-20">
+        Sevgiyle ve dostlukla hazırlandı ✨
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        /* ----------------------------------------------------
+           1. PETAL CANVAS ANIMATION (Floating & Falling Petals)
+        ---------------------------------------------------- */
+        const canvas = document.getElementById('petalCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
+
+        // Petal Object Configuration
+        class Petal {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * -height;
+                this.size = Math.random() * 8 + 8; // Size range
+                this.speedY = Math.random() * 1.2 + 0.6; // Falling speed
+                this.speedX = Math.random() * 0.8 - 0.4; // Sway speed
+                this.angle = Math.random() * Math.PI * 2;
+                this.spin = Math.random() * 0.02 - 0.01;
+                // Soft pastel colors for petals
+                const colors = [
+                    'rgba(243, 209, 209, 0.7)',
+                    'rgba(232, 180, 184, 0.8)',
+                    'rgba(255, 229, 236, 0.7)',
+                    'rgba(255, 240, 245, 0.9)'
+                ];
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+            }
+
+            update() {
+                this.y += this.speedY;
+                this.x += Math.sin(this.y * 0.01) + this.speedX;
+                this.angle += this.spin;
+
+                if (this.y > height + 20) {
+                    this.reset();
+                }
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.angle);
+                ctx.fillStyle = this.color;
+                
+                // Draw petal shape using bezier curves
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.bezierCurveTo(-this.size / 2, -this.size / 2, -this.size, this.size / 3, 0, this.size);
+                ctx.bezierCurveTo(this.size, this.size / 3, this.size / 2, -this.size / 2, 0, 0);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        // Initialize Petal Array
+        const petals = Array.from({ length: 45 }, () => new Petal());
+
+        function animatePetals() {
+            ctx.clearRect(0, 0, width, height);
+            petals.forEach(petal => {
+                petal.update();
+                petal.draw();
+            });
+            requestAnimationFrame(animatePetals);
+        }
+        animatePetals();
+
+        /* ----------------------------------------------------
+           2. SOFT BACKGROUND MUSIC SYNTHESIZER (Web Audio API)
+        ---------------------------------------------------- */
+        let audioCtx = null;
+        let isPlaying = false;
+        let melodyInterval = null;
+
+        const musicToggleBtn = document.getElementById('musicToggle');
+        const musicIcon = document.getElementById('musicIcon');
+        const musicText = document.getElementById('musicText');
+
+        // Soft Happy Birthday Pentatonic Melody Notes (Hz)
+        const notes = [
+            261.63, 261.63, 293.66, 261.63, 349.23, 329.63, // C4 C4 D4 C4 F4 E4
+            261.63, 261.63, 293.66, 261.63, 392.00, 349.23, // C4 C4 D4 C4 G4 F4
+            261.63, 261.63, 523.25, 440.00, 349.23, 329.63, 293.66, // C4 C4 C5 A4 F4 E4 D4
+            466.16, 466.16, 440.00, 349.23, 392.00, 349.23  // A#4 A#4 A4 F4 G4 F4
+        ];
+        let noteIndex = 0;
+
+        function playNote(freq) {
+            if (!audioCtx || audioCtx.state !== 'running') return;
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            // Soft Sine Wave sound for chime/music box effect
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+            // Smooth attack and release envelope
+            gain.gain.setValueAtTime(0, audioCtx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.15, audioCtx.currentTime + 0.1);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 1.2);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start();
+            osc.stop(audioCtx.currentTime + 1.2);
+        }
+
+        function toggleMusic() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            if (!isPlaying) {
+                isPlaying = true;
+                musicIcon.className = "fas fa-volume-up text-roseDust animate-pulse";
+                musicText.innerText = "Müziği Durdur";
+                
+                noteIndex = 0;
+                melodyInterval = setInterval(() => {
+                    playNote(notes[noteIndex]);
+                    noteIndex = (noteIndex + 1) % notes.length;
+                }, 500);
+            } else {
+                isPlaying = false;
+                musicIcon.className = "fas fa-music text-roseDust";
+                musicText.innerText = "Müziği Başlat";
+                clearInterval(melodyInterval);
+            }
+        }
+
+        musicToggleBtn.addEventListener('click', toggleMusic);
+
+        /* ----------------------------------------------------
+           3. POEM EDITING LOGIC
+        ---------------------------------------------------- */
+        const editBtn = document.getElementById('editBtn');
+        const editBtnText = document.getElementById('editBtnText');
+        const poemDisplay = document.getElementById('poemDisplay');
+        const poemEditArea = document.getElementById('poemEditArea');
+        const poemInput = document.getElementById('poemInput');
+        const saveBtn = document.getElementById('saveBtn');
+
+        let isEditing = false;
+
+        editBtn.addEventListener('click', () => {
+            isEditing = !isEditing;
+            if (isEditing) {
+                poemInput.value = poemDisplay.innerText.trim();
+                poemDisplay.classList.add('hidden');
+                poemEditArea.classList.remove('hidden');
+                editBtnText.innerText = "İptal";
+            } else {
+                poemDisplay.classList.remove('hidden');
+                poemEditArea.classList.add('hidden');
+                editBtnText.innerText = "Şiiri Düzenle";
+            }
+        });
+
+        saveBtn.addEventListener('click', () => {
+            const newText = poemInput.value.trim();
+            if (newText !== "") {
+                poemDisplay.innerText = newText;
+            }
+            isEditing = false;
+            poemDisplay.classList.remove('hidden');
+            poemEditArea.classList.add('hidden');
+            editBtnText.innerText = "Şiiri Düzenle";
+        });
+
+        /* ----------------------------------------------------
+           4. CONFETTI & FLOWER EXPLOSION EFFECT
+        ---------------------------------------------------- */
+        const celebrateBtn = document.getElementById('celebrateBtn');
+
+        function triggerCelebration() {
+            // Heart & Flower shape confetti burst
+            const count = 200;
+            const defaults = {
+                origin: { y: 0.7 }
+            };
+
+            function fire(particleRatio, opts) {
+                confetti(Object.assign({}, defaults, opts, {
+                    particleCount: Math.floor(count * particleRatio)
+                }));
+            }
+
+            fire(0.25, {
+                spread: 26,
+                startVelocity: 55,
+                colors: ['#E8B4B8', '#F3D1D1', '#D4AF37']
+            });
+            fire(0.2, {
+                spread: 60,
+                colors: ['#9E5A63', '#FFE5EC', '#ffffff']
+            });
+            fire(0.35, {
+                spread: 100,
+                decay: 0.91,
+                scalar: 0.8
+            });
+            fire(0.1, {
+                spread: 120,
+                startVelocity: 25,
+                decay: 0.92,
+                colors: ['#E8B4B8', '#D4AF37']
+            });
+            fire(0.1, {
+                spread: 120,
+                startVelocity: 45,
+            });
+        }
+
+        celebrateBtn.addEventListener('click', triggerCelebration);
+
+        // Small Sparkle Trigger for Wish Cards
+        function triggerMiniConfetti() {
+            confetti({
+                particleCount: 25,
+                spread: 50,
+                origin: { y: 0.8 },
+                colors: ['#E8B4B8', '#F3D1D1', '#D4AF37']
+            });
+        }
+    </script>
+</body>
+</html>
